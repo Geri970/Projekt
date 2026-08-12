@@ -1,6 +1,6 @@
 Csapat felépítése:
 
-Back End - Molnár Csongor Tamás
+Back End - Molnár Csongor
 
 Front End || Projekt menedzser- Sebestyén Gergő
 
@@ -26,6 +26,6 @@ Adatbázis - Gradwohl Áron
 
   Használt technológia
   Frontend - Angulart válassszuk oka, hogy mondtad ebbe tudtok segíteni
-  Backend - Java(amennyiben mást javasolsz kérlek jelezd(annyira nem lenne uj a java de nagyon basic szinten megy)
+  Backend - Java
   Adatbázis - mysql
   Verziókezelés - Github
