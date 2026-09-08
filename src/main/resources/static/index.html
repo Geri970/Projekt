@@ -1,0 +1,287 @@
+
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belépés</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial,sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background:linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #06b6d4
+            );
+        }
+
+        select{
+            width:100%;
+            padding:12px;
+            margin-top:10px;
+            border:1px solid #ddd;
+            border-radius:10px;
+        }
+        .teacher-box{
+            margin-top:15px;
+        }
+
+        .teacher-label{
+            display:flex;
+            align-items:center;
+            gap:12px;
+
+            background:#f4f6ff;
+            border:1px solid #dbe4ff;
+            border-radius:12px;
+
+            padding:12px 15px;
+
+            cursor:pointer;
+
+            transition:.3s;
+        }
+
+        .teacher-label:hover{
+            background:#e9edff;
+        }
+
+        .teacher-label span{
+            font-size:16px;
+            font-weight:600;
+            color:#4f46e5;
+        }
+
+        #teacherCheck{
+            width:20px;
+            height:20px;
+            accent-color:#4f46e5;
+            cursor:pointer;
+        }
+        .card{
+            width:420px;
+            background:white;
+            border-radius:20px;
+            padding:35px;
+            box-shadow:0 20px 40px rgba(0,0,0,.2);
+        }
+
+        h1{
+            text-align:center;
+            margin-bottom:20px;
+            color:#222;
+        }
+
+        input{
+            width:100%;
+            padding:12px;
+            margin-top:10px;
+            border:1px solid #ddd;
+            border-radius:10px;
+        }
+
+        button{
+            width:100%;
+            padding:12px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+        }
+
+        .main-btn{
+            background:#4f46e5;
+            color:white;
+            margin-top:20px;
+        }
+
+        .main-btn:hover{
+            background:#4338ca;
+        }
+
+        .switch-btn{
+            background:none;
+            color:#4f46e5;
+            margin-top:10px;
+        }
+
+        .message{
+            margin-top:15px;
+            text-align:center;
+            font-weight:bold;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h1 id="title">Regisztráció</h1>
+
+    <input
+            type="text"
+            id="nev"
+            placeholder="Felhasználónév">
+
+    <input
+            type="password"
+            id="jelszo"
+            placeholder="Jelszó">
+    <div id="teacherContainer" class="teacher-box">
+
+        <label class="teacher-label">
+
+            <input
+                    type="checkbox"
+                    id="teacherCheck">
+
+            <span>🎓 Tanárként regisztrálok</span>
+
+        </label>
+
+    </div>
+
+    <input
+            type="password"
+            id="teacherCode"
+            placeholder="Tanári kód"
+            style="display:none;">
+    <button
+            class="main-btn"
+            onclick="submitForm()">
+        Küldés
+    </button>
+
+    <button
+            class="switch-btn"
+            onclick="toggleMode()">
+        Van már fiókod? Jelentkezz be!
+    </button>
+
+    <div
+            class="message"
+            id="message">
+    </div>
+
+</div>
+
+<script>
+    document.getElementById("teacherCheck")
+        .addEventListener("change", function(){
+
+            const codeField =
+                document.getElementById("teacherCode");
+
+            codeField.style.display =
+                this.checked ? "block" : "none";
+        });
+    const user =
+        localStorage.getItem("user");
+
+    if(user){
+        window.location.href = "user.html";
+    }
+    let loginMode = false;
+
+    function toggleMode(){
+
+        loginMode = !loginMode;
+
+        document.getElementById("title").innerText =
+            loginMode
+                ? "Bejelentkezés"
+                : "Regisztráció";
+
+        document.querySelector(".switch-btn").innerText =
+            loginMode
+                ? "Nincs fiókod? Regisztrálj!"
+                : "Van már fiókod? Jelentkezz be!";
+
+        const teacherContainer =
+            document.getElementById("teacherContainer");
+
+        const teacherCode =
+            document.getElementById("teacherCode");
+
+        if(loginMode){
+
+            teacherContainer.style.display = "none";
+            teacherCode.style.display = "none";
+
+        }else{
+
+            teacherContainer.style.display = "block";
+        }
+
+        document.getElementById("message").innerText = "";
+    }
+
+    async function submitForm(){
+
+        const nev =
+            document.getElementById("nev").value;
+
+        const jelszo =
+            document.getElementById("jelszo").value;
+        const teacherCheck =
+            document.getElementById("teacherCheck").checked;
+
+        const teacherCode =
+            document.getElementById("teacherCode").value;
+        const url = loginMode
+            ? "/api/auth/login"
+            : "/api/auth/register";
+
+        const response = await fetch(url,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({
+                nev: nev,
+                jelszo: jelszo,
+                teacher: teacherCheck,
+                teacherCode: teacherCode
+            })
+        });
+
+        const text =
+            await response.text();
+
+        if(
+            text === "Sikeres"
+        ){
+
+            localStorage.setItem(
+                "user",
+                nev
+            );
+
+            window.location.href =
+                "user.html";
+
+            return;
+        }
+
+        document.getElementById("message")
+            .innerText = text;
+    }
+
+</script>
+
+</body>
+</html>

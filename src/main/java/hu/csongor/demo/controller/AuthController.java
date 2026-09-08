@@ -1,0 +1,84 @@
+package hu.csongor.demo.controller;
+
+import hu.csongor.demo.entity.User;
+import hu.csongor.demo.repository.UserRepository;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import hu.csongor.demo.dto.RegisterRequest;
+
+@RestController
+@RequestMapping("/api/auth")
+@CrossOrigin
+public class AuthController {
+
+    private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    public AuthController(UserRepository userRepository,
+                          BCryptPasswordEncoder passwordEncoder) {
+
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+    @PostMapping("/register")
+    public String register(
+            @RequestBody RegisterRequest request) {
+
+        if(userRepository.existsByNev(
+                request.getNev())) {
+
+            return "Ez a nev mar foglalt!";
+        }
+
+        User user = new User();
+
+        user.setNev(request.getNev());
+
+        user.setJelszo(
+                passwordEncoder.encode(
+                        request.getJelszo()
+                )
+        );
+
+        if(request.isTeacher()) {
+
+            if(!request.getTeacherCode()
+                    .equals("ISKOLA2026")) {
+
+                return "Hibás tanári kód!";
+            }
+
+            user.setRole("TANAR");
+
+        } else {
+
+            user.setRole("DIAK");
+        }
+
+        userRepository.save(user);
+
+        return "Sikeres";
+    }
+    @PostMapping("/login")
+    public String login(@RequestBody User user) {
+
+        User dbUser = userRepository.findByNev(user.getNev());
+
+        if(dbUser == null) {
+            return "Nincs ilyen felhasznalo!";
+        }
+
+        boolean matches = passwordEncoder.matches(
+                user.getJelszo(),
+                dbUser.getJelszo()
+        );
+
+        if(!matches) {
+            return "Hibas jelszo!";
+        }
+
+        return "Sikeres";
+    }
+
+
+}
