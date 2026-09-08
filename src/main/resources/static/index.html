@@ -111,10 +111,29 @@
             background:#4338ca;
         }
 
+        .switch-section{
+            margin-top:20px;
+            text-align:center;
+        }
+
+        .switch-text{
+            color:#64748B;
+            margin-bottom:10px;
+            font-size:14px;
+        }
+
         .switch-btn{
-            background:none;
-            color:#4f46e5;
-            margin-top:10px;
+            width:100%;
+            background:white;
+            border:2px solid #4F46E5;
+            color:#4F46E5;
+            font-weight:600;
+            transition:.3s;
+        }
+
+        .switch-btn:hover{
+            background:#4F46E5;
+            color:white;
         }
 
         .message{
@@ -166,11 +185,22 @@
         Küldés
     </button>
 
-    <button
-            class="switch-btn"
-            onclick="toggleMode()">
-        Van már fiókod? Jelentkezz be!
-    </button>
+    <div class="switch-section">
+
+        <p class="switch-text" id="switchText">
+            Van már fiókod?
+        </p>
+
+        <button
+                class="switch-btn"
+                onclick="toggleMode()"
+                id="switchButton">
+
+            Bejelentkezés
+
+        </button>
+
+    </div>
 
     <div
             class="message"
@@ -206,10 +236,15 @@
                 ? "Bejelentkezés"
                 : "Regisztráció";
 
-        document.querySelector(".switch-btn").innerText =
+        document.getElementById("switchText").innerText =
             loginMode
-                ? "Nincs fiókod? Regisztrálj!"
-                : "Van már fiókod? Jelentkezz be!";
+                ? "Nincs még fiókod?"
+                : "Van már fiókod?";
+
+        document.getElementById("switchButton").innerText =
+            loginMode
+                ? "Regisztráció"
+                : "Bejelentkezés";
 
         const teacherContainer =
             document.getElementById("teacherContainer");
