@@ -160,6 +160,10 @@
             type="password"
             id="jelszo"
             placeholder="Jelszó">
+    <input
+            type="email"
+            id="email"
+            placeholder="Email cím">
     <div id="teacherContainer" class="teacher-box">
 
         <label class="teacher-label">
@@ -251,11 +255,13 @@
 
         const teacherCode =
             document.getElementById("teacherCode");
-
+        const email =
+            document.getElementById("email");
         if(loginMode){
 
             teacherContainer.style.display = "none";
             teacherCode.style.display = "none";
+            email.style.display = "none";
 
         }else{
 
@@ -272,6 +278,8 @@
 
         const jelszo =
             document.getElementById("jelszo").value;
+        const email =
+            document.getElementById("email").value;
         const teacherCheck =
             document.getElementById("teacherCheck").checked;
 
@@ -289,6 +297,7 @@
             body: JSON.stringify({
                 nev: nev,
                 jelszo: jelszo,
+                email: email,
                 teacher: teacherCheck,
                 teacherCode: teacherCode
             })

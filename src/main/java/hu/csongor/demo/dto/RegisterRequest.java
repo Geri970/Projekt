@@ -4,6 +4,7 @@ public class RegisterRequest {
 
     private String nev;
     private String jelszo;
+    private String email;
 
     private boolean teacher;
     private String teacherCode;
@@ -23,7 +24,12 @@ public class RegisterRequest {
     public void setJelszo(String jelszo) {
         this.jelszo = jelszo;
     }
-
+    public String getEmail(){
+        return email;
+    }
+    public void setEmail(String email){
+        this.email = email;
+    }
     public boolean isTeacher() {
         return teacher;
     }

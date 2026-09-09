@@ -5,6 +5,7 @@ import hu.csongor.demo.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import hu.csongor.demo.dto.RegisterRequest;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -33,13 +34,20 @@ public class AuthController {
         User user = new User();
 
         user.setNev(request.getNev());
-
+        user.setEmail(request.getEmail());
+        user.setRegisztracioDatum(
+                LocalDateTime.now().withNano(0)
+        );
+        user.setTiltva(false);
         user.setJelszo(
                 passwordEncoder.encode(
                         request.getJelszo()
                 )
         );
 
+        if(userRepository.existsByEmail(user.getEmail())){
+            return "Ez az email már foglalt!";
+        }
         if(request.isTeacher()) {
 
             if(!request.getTeacherCode()
@@ -67,7 +75,11 @@ public class AuthController {
         if(dbUser == null) {
             return "Nincs ilyen felhasznalo!";
         }
-
+        if(dbUser.isTiltva()){
+            return "Fiók le van tiltva!";
+        }
+        System.out.println("Beirt jelszo: " + user.getJelszo());
+        System.out.println("DB hash: " + dbUser.getJelszo());
         boolean matches = passwordEncoder.matches(
                 user.getJelszo(),
                 dbUser.getJelszo()

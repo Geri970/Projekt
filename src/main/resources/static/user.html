@@ -88,8 +88,18 @@
     <button onclick="logout()">
         Kijelentkezés
     </button>
+    <button onclick="tiltas()">
+        Teszt tiltás
+    </button>
 
+    <button onclick="feloldas()">
+        Teszt feloldás
+    </button>
+    <button onclick="tanaron">
+        Tanárrá tétel
+    </button>
 </div>
+
 
 <script>
 
@@ -109,7 +119,43 @@
 
         window.location.href = "/";
     }
+    async function tiltas(){
 
+        const response = await fetch(
+            "/api/users/1/tiltas",
+            {
+                method: "PUT"
+            }
+        );
+
+        const text = await response.text();
+
+        alert(text);
+    }
+
+    async function feloldas(){
+
+        const response = await fetch(
+            "/api/users/1/feloldas",
+            {
+                method: "PUT"
+            }
+        );
+
+        const text = await response.text();
+
+        alert(text);
+    }
+
+    async function tanaron(){
+        const response = await fetch(
+            "/api/users/1/tanar",
+            {
+                method: "PUT"
+            }
+        )
+        alert(await response.text());
+    }
 </script>
 
 </body>
