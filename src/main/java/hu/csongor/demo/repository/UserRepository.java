@@ -7,4 +7,6 @@ public interface  UserRepository extends JpaRepository<User, Long>{
     boolean existsByNev(String nev);
     boolean existsByEmail(String email);
     User findByNev(String nev);
+    long  countByRole(String role);
+    long countByTiltva(boolean tiltva);
 }

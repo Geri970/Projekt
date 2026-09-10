@@ -95,8 +95,39 @@
     <button onclick="feloldas()">
         Teszt feloldás
     </button>
-    <button onclick="tanaron">
+    <button onclick="tanaron()">
         Tanárrá tétel
+    </button>
+    <button onclick="torles()">
+        Törlés
+    </button>
+    <input
+            type="text"
+            id="nev"
+            placeholder="Szakkör neve">
+
+    <input
+            type="text"
+            id="leiras"
+            placeholder="Leírás">
+
+    <input
+            type="text"
+            id="idopont"
+            placeholder="Időpont">
+
+    <input
+            type="number"
+            id="maxLetszam"
+            placeholder="Max létszám">
+    <input
+            type="text"
+            id="helyszin"
+            placeholder="Helyszín">
+
+    <button onclick="createSzakkor()">
+        Szakkör létrehozása
+
     </button>
 </div>
 
@@ -155,6 +186,63 @@
             }
         )
         alert(await response.text());
+    }
+    async function torles(){
+
+
+        const response = await fetch(
+            "/api/users/1/torles",
+            {
+                method:"DELETE"
+            }
+        );
+
+        const text = await response.text();
+
+        alert(text);
+    }
+    async function createSzakkor(){
+        alert("A függvény lefutott");
+        const nev =
+            document.getElementById("nev").value;
+
+        const leiras =
+            document.getElementById("leiras").value;
+
+        const idopont =
+            document.getElementById("idopont").value;
+
+        const helyszin =
+            document.getElementById("helyszin").value;
+        const maxLetszam =
+            document.getElementById("maxLetszam").value;
+
+        const response = await fetch(
+            "/api/szakkor",
+            {
+                method: "POST",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body: JSON.stringify({
+
+                    nev: nev,
+                    leiras: leiras,
+                    idopont: idopont,
+                    helyszin: helyszin,
+                    maxLetszam: maxLetszam
+
+                })
+            }
+        );
+        const data =
+            await response.json();
+
+        console.log(data);
+
+        alert("Szakkör létrehozva!");
     }
 </script>
 

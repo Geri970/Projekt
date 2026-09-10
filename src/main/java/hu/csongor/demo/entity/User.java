@@ -15,16 +15,17 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
     private String nev;
-
     private String jelszo;
     private String email;
     private String role;
     private LocalDateTime regisztracioDatum;
     private boolean tiltva;
 
-    public Long getId() {
+    public Long getId()
+    {
         return id;
     }
     public void setId(Long id) {

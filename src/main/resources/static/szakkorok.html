@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Szakkörök teszt</title>
+</head>
+
+<body>
+
+<h1>Szakkörök</h1>
+
+<button onclick="loadSzakkorok()">
+    Betöltés
+</button>
+
+<div id="szakkorok"></div>
+
+<script>
+
+    async function loadSzakkorok(){
+
+        const response =
+            await fetch("/api/szakkor");
+
+        const szakkorok =
+            await response.json();
+
+        console.log(szakkorok);
+
+        const container =
+            document.getElementById("szakkorok");
+
+        container.innerHTML = "";
+
+        szakkorok.forEach(szakkor => {
+
+            container.innerHTML += `
+
+                <div style="
+                    border:1px solid black;
+                    margin:10px;
+                    padding:10px;
+                ">
+
+                    <h3>${szakkor.nev}</h3>
+
+                    <p>${szakkor.leiras}</p>
+
+                    <p>
+                        ${szakkor.idopont}
+                    </p>
+
+                    <p>
+                        Max létszám:
+                        ${szakkor.maxLetszam}
+                    </p>
+
+                </div>
+
+            `;
+
+        });
+
+    }
+
+</script>
+
+</body>
+</html>

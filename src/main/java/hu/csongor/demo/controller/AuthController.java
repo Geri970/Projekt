@@ -78,8 +78,6 @@ public class AuthController {
         if(dbUser.isTiltva()){
             return "Fiók le van tiltva!";
         }
-        System.out.println("Beirt jelszo: " + user.getJelszo());
-        System.out.println("DB hash: " + dbUser.getJelszo());
         boolean matches = passwordEncoder.matches(
                 user.getJelszo(),
                 dbUser.getJelszo()
