@@ -57,4 +57,27 @@ public class SzakkorController {
         szakkorRepository.delete(szakkor);
         return "Szakkör törölve";
     }
+    @PutMapping("/{id}/update")
+    public String updateSzakkor(
+            @PathVariable Long id,
+            @RequestBody Szakkor ujAdatok) {
+
+        Szakkor szakkor = szakkorRepository
+                .findById(id)
+                .orElse(null);
+
+        if(szakkor == null){
+            return "Nincs ilyen szakkör!";
+        }
+
+        szakkor.setNev(ujAdatok.getNev());
+        szakkor.setLeiras(ujAdatok.getLeiras());
+        szakkor.setIdopont(ujAdatok.getIdopont());
+        szakkor.setHelyszin(ujAdatok.getHelyszin());
+        szakkor.setMaxLetszam(ujAdatok.getMaxLetszam());
+
+        szakkorRepository.save(szakkor);
+
+        return "Szakkör módosítva!";
+    }
 }
