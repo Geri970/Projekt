@@ -7,6 +7,8 @@ import hu.csongor.demo.repository.SzakkorRepository;
 import hu.csongor.demo.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.time.LocalDateTime;
 
 @RestController
@@ -65,6 +67,19 @@ public class JelentkezesController {
     public List<Jelentkezes> getAllJelentkezes() {
         return jelentkezesRepository.findAll();
     }
+    @GetMapping("/szakkor/{id}/db")
+    public Map<String, Long> getJelentkezokSzama(
+            @PathVariable Long id){
+
+        Map<String, Long> map = new HashMap<>();
+
+        map.put(
+                "jelentkezok",
+                jelentkezesRepository.countBySzakkorId(id)
+        );
+
+        return map;
+    }
     @GetMapping("/user/{id}")
     public List<Jelentkezes> getUserJelentkezesek(@PathVariable Long id){
 
@@ -76,6 +91,24 @@ public class JelentkezesController {
 
         return jelentkezesRepository
                 .findBySzakkorId(id);
+    }
+    @DeleteMapping("/{id}")
+    public String torles(
+            @PathVariable Long id){
+
+        Jelentkezes jelentkezes =
+                jelentkezesRepository.findById(id)
+                        .orElse(null);
+
+        if(jelentkezes == null){
+            return "Nincs ilyen jelentkezés!";
+        }
+
+        jelentkezesRepository.delete(
+                jelentkezes
+        );
+
+        return "Jelentkezés törölve!";
     }
 
 }
