@@ -24,13 +24,29 @@ public class AuthController {
     @PostMapping("/register")
     public String register(
             @RequestBody RegisterRequest request) {
-
+        if(request.getNev() == null || request.getNev().isBlank()){
+            return "Név megadása kötelező!";
+        }
         if(userRepository.existsByNev(
                 request.getNev())) {
 
             return "Ez a nev mar foglalt!";
         }
+        if(request.getEmail() == null || request.getEmail().isBlank()){
+            return "Email megadása kötelező";
+        };
+        if(!request.getEmail().matches(
+                "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")){
 
+            return "Érvénytelen email cím!";
+        }
+        if(request.getJelszo() == null || request.getJelszo().isBlank()){
+            return "Jelszó megadása kötelező";
+        }
+        if(request.getJelszo().length() < 6){
+
+            return "A jelszónak legalább 6 karakter hosszúnak kell lennie!";
+        }
         User user = new User();
 
         user.setNev(request.getNev());
