@@ -1,29 +1,32 @@
 package hu.csongor.demo.controller;
 
-
 import hu.csongor.demo.entity.User;
 import hu.csongor.demo.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import java.util.Map;
+
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+
     private final UserRepository userRepository;
+
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
     @GetMapping
     public List<User> getUsers() {
         return userRepository.findAll();
     }
-    @GetMapping("/stats")
-    public Map<String, Long> getStats() {
 
-        Map<String, Long> stats = new HashMap<>();
+    @GetMapping("/stats")
+    public Map<String, Object> getStats() {
+
+        Map<String, Object> stats = new HashMap<>();
 
         stats.put(
                 "osszes",
@@ -42,65 +45,79 @@ public class UserController {
 
         stats.put(
                 "tiltott",
-                userRepository.countByTiltva(true)
+                userRepository.countByIsBanned(true)
         );
 
         return stats;
     }
 
-
-
-
     @PutMapping("/{id}/tiltas")
-    public String tiltas(@PathVariable Long id){
+    public String tiltas(
+            @PathVariable Integer id) {
+
         User user = userRepository.findById(id)
                 .orElse(null);
-        if(user == null){
+
+        if (user == null) {
             return "Felhasználó nem található";
         }
-        user.setTiltva(true);
+
+        user.setIsBanned(true);
+
         userRepository.save(user);
 
         return "Felhasználó tiltva";
     }
+
     @PutMapping("/{id}/feloldas")
-    public String feloldas(@PathVariable Long id) {
+    public String feloldas(
+            @PathVariable Integer id) {
 
         User user = userRepository.findById(id)
                 .orElse(null);
 
-        if(user == null){
+        if (user == null) {
             return "Felhasználó nem található!";
         }
 
-        user.setTiltva(false);
+        user.setIsBanned(false);
 
         userRepository.save(user);
 
-        return "Felhasználó tiltva!";
+        return "Felhasználó feloldva!";
     }
+
     @PutMapping("/{id}/tanar")
-    public String tanar(@PathVariable Long id) {
+    public String tanar(
+            @PathVariable Integer id) {
+
         User user = userRepository.findById(id)
                 .orElse(null);
-        if(user == null){
+
+        if (user == null) {
             return "Felhasználó nem található";
         }
+
         user.setRole("TANAR");
+
         userRepository.save(user);
+
         return "Felhasználó már tanár";
     }
+
     @DeleteMapping("/{id}/torles")
-    public String torles(@PathVariable Long id) {
-        System.out.println("Torles hivva, ID: " + id);
+    public String torles(
+            @PathVariable Integer id) {
+
         User user = userRepository.findById(id)
                 .orElse(null);
-        if(user == null){
+
+        if (user == null) {
             return "Felhasználó nem található";
         }
+
         userRepository.delete(user);
+
         return "Fiók törölve";
     }
-
-
 }

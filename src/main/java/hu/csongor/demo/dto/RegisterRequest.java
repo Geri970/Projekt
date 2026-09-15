@@ -2,34 +2,37 @@ package hu.csongor.demo.dto;
 
 public class RegisterRequest {
 
-    private String nev;
-    private String jelszo;
+    private String name;
+    private String password;
     private String email;
 
     private boolean teacher;
     private String teacherCode;
 
-    public String getNev() {
-        return nev;
+    public String getName() {
+        return name;
     }
 
-    public void setNev(String nev) {
-        this.nev = nev;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getJelszo() {
-        return jelszo;
+    public String getPassword() {
+        return password;
     }
 
-    public void setJelszo(String jelszo) {
-        this.jelszo = jelszo;
+    public void setPassword(String password) {
+        this.password = password;
     }
-    public String getEmail(){
+
+    public String getEmail() {
         return email;
     }
-    public void setEmail(String email){
+
+    public void setEmail(String email) {
         this.email = email;
     }
+
     public boolean isTeacher() {
         return teacher;
     }

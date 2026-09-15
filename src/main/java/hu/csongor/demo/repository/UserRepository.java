@@ -3,10 +3,17 @@ package hu.csongor.demo.repository;
 import hu.csongor.demo.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface  UserRepository extends JpaRepository<User, Long>{
-    boolean existsByNev(String nev);
+public interface UserRepository
+        extends JpaRepository<User, Integer> {
+
+    boolean existsByName(String name);
+
     boolean existsByEmail(String email);
-    User findByNev(String nev);
-    long  countByRole(String role);
-    long countByTiltva(boolean tiltva);
+
+    User findByName(String name);
+
+    Integer countByRole(String role);
+
+    Integer countByIsBanned(Boolean isBanned);
+
 }

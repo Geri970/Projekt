@@ -6,10 +6,11 @@ import hu.csongor.demo.repository.JelentkezesRepository;
 import hu.csongor.demo.repository.SzakkorRepository;
 import hu.csongor.demo.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
+
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/jelentkezes")
@@ -23,6 +24,7 @@ public class JelentkezesController {
             JelentkezesRepository jelentkezesRepository,
             UserRepository userRepository,
             SzakkorRepository szakkorRepository) {
+
         this.jelentkezesRepository = jelentkezesRepository;
         this.userRepository = userRepository;
         this.szakkorRepository = szakkorRepository;
@@ -30,31 +32,45 @@ public class JelentkezesController {
 
     @PostMapping
     public Object jelentkezes(
-            @RequestBody Jelentkezes jelentkezes){
+            @RequestBody Jelentkezes jelentkezes) {
 
-        if(!userRepository.existsById(
+        if (!userRepository.existsById(
                 jelentkezes.getUserId())) {
 
             return "Nincs ilyen felhasználó!";
         }
 
-        if(!szakkorRepository.existsById(
+        if (!szakkorRepository.existsById(
                 jelentkezes.getSzakkorId())) {
 
             return "Nincs ilyen szakkör!";
         }
-        if(jelentkezesRepository
+
+        if (jelentkezesRepository
                 .existsByUserIdAndSzakkorId(
                         jelentkezes.getUserId(),
-                        jelentkezes.getSzakkorId())){
+                        jelentkezes.getSzakkorId())) {
 
             return "Már jelentkeztél erre a szakkörre!";
         }
-        Szakkor szakkor = szakkorRepository.findById(jelentkezes.getSzakkorId()).orElse(null);
-        long letszam = jelentkezesRepository.countBySzakkorId(jelentkezes.getSzakkorId());
-        if( letszam >= szakkor.getMaxLetszam()){
-            return "A szakkör betelt";
+
+        Szakkor szakkor =
+                szakkorRepository.findById(
+                                jelentkezes.getSzakkorId())
+                        .orElse(null);
+
+        if (szakkor == null) {
+            return "Nincs ilyen szakkör!";
         }
+
+        long letszam =
+                jelentkezesRepository.countBySzakkorId(
+                        jelentkezes.getSzakkorId());
+
+        if (letszam >= szakkor.getMaxLetszam()) {
+            return "A szakkör betelt!";
+        }
+
         jelentkezes.setJelentkezesDatum(
                 LocalDateTime.now().withNano(0)
         );
@@ -63,13 +79,16 @@ public class JelentkezesController {
                 jelentkezes
         );
     }
+
     @GetMapping
     public List<Jelentkezes> getAllJelentkezes() {
+
         return jelentkezesRepository.findAll();
     }
+
     @GetMapping("/szakkor/{id}/db")
     public Map<String, Long> getJelentkezokSzama(
-            @PathVariable Long id){
+            @PathVariable Integer id){
 
         Map<String, Long> map = new HashMap<>();
 
@@ -80,27 +99,33 @@ public class JelentkezesController {
 
         return map;
     }
-    @GetMapping("/user/{id}")
-    public List<Jelentkezes> getUserJelentkezesek(@PathVariable Long id){
 
-        return jelentkezesRepository.findByUserId(id);
+    @GetMapping("/user/{id}")
+    public List<Jelentkezes> getUserJelentkezesek(
+            @PathVariable Integer id) {
+
+        return jelentkezesRepository
+                .findByUserId(id);
     }
+
     @GetMapping("/szakkor/{id}")
     public List<Jelentkezes> getSzakkorJelentkezoi(
-            @PathVariable Long id){
+            @PathVariable Integer id) {
 
         return jelentkezesRepository
                 .findBySzakkorId(id);
     }
+
     @DeleteMapping("/{id}")
     public String torles(
-            @PathVariable Long id){
+            @PathVariable Integer id) {
 
         Jelentkezes jelentkezes =
-                jelentkezesRepository.findById(id)
+                jelentkezesRepository
+                        .findById(id)
                         .orElse(null);
 
-        if(jelentkezes == null){
+        if (jelentkezes == null) {
             return "Nincs ilyen jelentkezés!";
         }
 
@@ -110,5 +135,4 @@ public class JelentkezesController {
 
         return "Jelentkezés törölve!";
     }
-
 }

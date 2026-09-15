@@ -1,39 +1,45 @@
 package hu.csongor.demo.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "jelentkezesek")
 public class Jelentkezes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    private Long userId;
+    @Column(name = "user_id")
+    private Integer userId;
 
-    private Long szakkorId;
+    @Column(name = "szakkor_id")
+    private Integer szakkorId;
 
+    @Column(name = "created_at")
     private LocalDateTime jelentkezesDatum;
-
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
-    public Long getSzakkorId() {
+    public Integer getSzakkorId() {
         return szakkorId;
     }
 
-    public void setSzakkorId(Long szakkorId) {
+    public void setSzakkorId(Integer szakkorId) {
         this.szakkorId = szakkorId;
     }
 
@@ -41,7 +47,9 @@ public class Jelentkezes {
         return jelentkezesDatum;
     }
 
-    public void setJelentkezesDatum(LocalDateTime jelentkezesDatum) {
+    public void setJelentkezesDatum(
+            LocalDateTime jelentkezesDatum) {
+
         this.jelentkezesDatum = jelentkezesDatum;
     }
 }

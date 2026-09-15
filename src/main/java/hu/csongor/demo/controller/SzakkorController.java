@@ -4,6 +4,7 @@ import hu.csongor.demo.entity.Szakkor;
 import hu.csongor.demo.repository.SzakkorRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -27,10 +28,18 @@ public class SzakkorController {
     @PostMapping
     public Object createSzakkor(
             @RequestBody Szakkor szakkor) {
-        if (szakkorRepository.existsByNev(szakkor.getNev())) {
+        if(szakkor.getName() == null ||
+                szakkor.getName().isBlank()){
+
+            return "A szakkör neve kötelező!";
+        }
+
+        if(szakkorRepository.existsByName(
+                szakkor.getName())){
+
             return "Már létezik ilyen szakkör";
         }
-        if(szakkor.getNev() == null || szakkor.getNev().isBlank()){
+        if(szakkor.getName() == null || szakkor.getName().isBlank()){
             return "A szakkör neve kötelező!";
         }
         if(szakkor.getHelyszin() == null || szakkor.getHelyszin().isBlank()){
@@ -45,11 +54,18 @@ public class SzakkorController {
         if(szakkor.getMaxLetszam() <= 0){
             return "A maximális létszám nem lehet 0!";
         }
+        szakkor.setCreatedAt(
+                LocalDateTime.now().withNano(0)
+        );
 
+        szakkor.setUpdatedAt(
+                LocalDateTime.now().withNano(0)
+        );
+        szakkor.setDeleted(false);
         return szakkorRepository.save(szakkor);
     }
     @DeleteMapping("/{id}/del")
-    public String torles(@PathVariable Long id){
+    public String torles(@PathVariable Integer id){
         Szakkor szakkor = szakkorRepository.findById(id).orElse(null);
         if(szakkor == null){
             return "Nincs ilyen szakkör";
@@ -59,7 +75,7 @@ public class SzakkorController {
     }
     @PutMapping("/{id}/update")
     public String updateSzakkor(
-            @PathVariable Long id,
+            @PathVariable Integer id,
             @RequestBody Szakkor ujAdatok) {
 
         Szakkor szakkor = szakkorRepository
@@ -70,10 +86,13 @@ public class SzakkorController {
             return "Nincs ilyen szakkör!";
         }
 
-        szakkor.setNev(ujAdatok.getNev());
+        szakkor.setName(ujAdatok.getName());
         szakkor.setLeiras(ujAdatok.getLeiras());
         szakkor.setIdopont(ujAdatok.getIdopont());
         szakkor.setHelyszin(ujAdatok.getHelyszin());
+        szakkor.setUpdatedAt(
+                LocalDateTime.now().withNano(0)
+        );
         szakkor.setMaxLetszam(ujAdatok.getMaxLetszam());
 
         szakkorRepository.save(szakkor);

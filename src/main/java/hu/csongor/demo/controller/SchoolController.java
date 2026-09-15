@@ -20,10 +20,10 @@ public class SchoolController {
     public Object createSchool(
             @RequestBody School school){
 
-        if(school.getNev() == null ||
-                school.getNev().isBlank()){
+        if(school.getName() == null ||
+                school.getName().isBlank()){
 
-            return "Az iskola neve kötelező!";
+            return "Az iskola Namee kötelező!";
         }
         if(school.getVaros() == null ||
                 school.getVaros().isBlank()){
@@ -36,8 +36,8 @@ public class SchoolController {
             return "Az iskola leírása kötelező!";
         }
         if(schoolRepository
-                .existsByNev(
-                        school.getNev())){
+                .existsByName(
+                        school.getName())){
 
             return "Már létezik ilyen iskola!";
         }
@@ -59,9 +59,17 @@ public class SchoolController {
     public List<School> getAllSchoolsPending(){
         return schoolRepository.findByStatusz("PENDING");
     }
+    @GetMapping("/APPROVED")
+    public List<School> getAllSchoolsApproved(){
+        return schoolRepository.findByStatusz("APPROVED");
+    }
+    @GetMapping("/REJECTED")
+    public List<School> getAllSchoolsRejected(){
+        return schoolRepository.findByStatusz("REJECTED");
+    }
     @PutMapping("/{id}/approve")
     public String approveSchool(
-                @PathVariable Long id){
+                @PathVariable Integer id){
         School school = schoolRepository.findById(id).orElse(null);
         if(school == null){
             return "Nincs ilyen iskola";
@@ -72,7 +80,7 @@ public class SchoolController {
     }
     @PutMapping("/{id}/reject")
     public String rejectSchool(
-            @PathVariable Long id){
+            @PathVariable Integer id){
         School school = schoolRepository.findById(id).orElse(null);
         if(school == null){
             return "Nincs ilyen iskola";

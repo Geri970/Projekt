@@ -3,33 +3,34 @@ package hu.csongor.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "schools")
+@Table(name = "iskolak")
 public class School {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    private String nev;
+    @Column(name = "name")
+    private String name;
 
+    @Column(name = "city")
     private String varos;
 
-    private String weboldal;
-
+    @Column(name = "description")
     private String leiras;
 
+    @Column(name = "status")
     private String statusz;
-
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public String getNev() {
-        return nev;
+    public String getName() {
+        return name;
     }
 
-    public void setNev(String nev) {
-        this.nev = nev;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getVaros() {
@@ -38,14 +39,6 @@ public class School {
 
     public void setVaros(String varos) {
         this.varos = varos;
-    }
-
-    public String getWeboldal() {
-        return weboldal;
-    }
-
-    public void setWeboldal(String weboldal) {
-        this.weboldal = weboldal;
     }
 
     public String getLeiras() {
