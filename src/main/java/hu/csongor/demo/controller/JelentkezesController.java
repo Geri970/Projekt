@@ -134,6 +134,7 @@ public class JelentkezesController {
                 .findBySzakkorId(id);
     }
 
+
     @DeleteMapping("/{id}")
     public String torles(
             @PathVariable Integer id) {

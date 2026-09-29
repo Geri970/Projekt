@@ -2,8 +2,14 @@ package hu.csongor.demo.controller;
 
 import hu.csongor.demo.entity.School;
 import hu.csongor.demo.entity.Szakkor;
+import hu.csongor.demo.repository.JelentkezesRepository;
 import hu.csongor.demo.repository.SchoolRepository;
 import hu.csongor.demo.repository.SzakkorRepository;
+import hu.csongor.demo.dto.response.SzakkorResponse;
+import hu.csongor.demo.dto.response.JelentkezoResponse;
+import hu.csongor.demo.entity.Jelentkezes;
+import hu.csongor.demo.entity.User;
+import hu.csongor.demo.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -15,20 +21,43 @@ public class SzakkorController {
 
     private final SzakkorRepository szakkorRepository;
     private final SchoolRepository schoolRepository;
+    private final JelentkezesRepository jelentkezesRepository;
+    private final UserRepository userRepository;
+
 
     public SzakkorController(
             SzakkorRepository szakkorRepository,
-            SchoolRepository schoolRepository) {
+            SchoolRepository schoolRepository,
+            JelentkezesRepository jelentkezesRepository,
+            UserRepository userRepository) {
 
         this.szakkorRepository = szakkorRepository;
         this.schoolRepository = schoolRepository;
+        this.jelentkezesRepository = jelentkezesRepository;
+        this.userRepository = userRepository;
     }
 
+
     @GetMapping
-    public List<Szakkor> getAllSzakkorok() {
+    public List<SzakkorResponse> getAllSzakkorok() {
 
-        return szakkorRepository.findAll();
+        List<Szakkor> szakkorok =
+                szakkorRepository.findByDeleted(false);
 
+        return szakkorok.stream()
+                .map(szakkor -> new SzakkorResponse(
+                        szakkor.getId(),
+                        szakkor.getName(),
+                        szakkor.getLeiras(),
+                        szakkor.getIdopont(),
+                        szakkor.getHelyszin(),
+                        szakkor.getMaxLetszam(),
+                        jelentkezesRepository
+                                .countBySzakkorId(
+                                        szakkor.getId()
+                                )
+                ))
+                .toList();
     }
     @PostMapping
     public Object createSzakkor(
@@ -83,6 +112,30 @@ public class SzakkorController {
     @GetMapping("/school/{id}")
     public List<Szakkor> getSchoolSzakkorok(@PathVariable Integer id) {
         return szakkorRepository.findBySchoolId(id);
+    }
+    @GetMapping("/{id}/applicants")
+    public List<JelentkezoResponse> getJelentkezok(
+            @PathVariable Integer id) {
+
+        List<Jelentkezes> jelentkezesek =
+                jelentkezesRepository.findBySzakkorId(id);
+
+        return jelentkezesek.stream()
+                .map(jelentkezes -> {
+
+                    User user = userRepository
+                            .findById(
+                                    jelentkezes.getUserId()
+                            )
+                            .orElse(null);
+
+                    return new JelentkezoResponse(
+                            user.getId(),
+                            user.getName(),
+                            user.getEmail()
+                    );
+                })
+                .toList();
     }
     @DeleteMapping("/{id}/del")
     public String torles(@PathVariable Integer id){

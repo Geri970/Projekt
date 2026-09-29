@@ -3,6 +3,7 @@ package hu.csongor.demo.controller;
 import hu.csongor.demo.entity.User;
 import hu.csongor.demo.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
+import hu.csongor.demo.dto.response.UserResponse;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -20,8 +21,18 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userRepository.findByIsDeleted(false);
+    public List<UserResponse> getUsers() {
+
+        List<User> users =
+                userRepository.findByIsDeleted(false);
+
+        return users.stream()
+                .map(user -> new UserResponse(
+                        user.getId(),
+                        user.getName(),
+                        user.getEmail()
+                ))
+                .toList();
     }
 
     @GetMapping("/stats")
