@@ -2,6 +2,7 @@ package hu.csongor.demo.controller;
 
 import hu.csongor.demo.entity.Jelentkezes;
 import hu.csongor.demo.entity.Szakkor;
+import hu.csongor.demo.entity.User;
 import hu.csongor.demo.repository.JelentkezesRepository;
 import hu.csongor.demo.repository.SzakkorRepository;
 import hu.csongor.demo.repository.UserRepository;
@@ -39,13 +40,28 @@ public class JelentkezesController {
 
             return "Nincs ilyen felhasználó!";
         }
+        User user =
+                userRepository.findById(
+                                jelentkezes.getUserId())
+                        .orElse(null);
+
+        if(Boolean.TRUE.equals(
+                user.getIsDeleted())) {
+
+            return "A felhasználó törölve van!";
+        }
+
+        if(Boolean.TRUE.equals(
+                user.getIsBanned())) {
+
+            return "A felhasználó tiltva van!";
+        }
 
         if (!szakkorRepository.existsById(
                 jelentkezes.getSzakkorId())) {
 
             return "Nincs ilyen szakkör!";
         }
-
         if (jelentkezesRepository
                 .existsByUserIdAndSzakkorId(
                         jelentkezes.getUserId(),
@@ -58,7 +74,9 @@ public class JelentkezesController {
                 szakkorRepository.findById(
                                 jelentkezes.getSzakkorId())
                         .orElse(null);
-
+        if(Boolean.TRUE.equals(szakkor.getDeleted())){
+            return "A szakkör törölve van!";
+        }
         if (szakkor == null) {
             return "Nincs ilyen szakkör!";
         }

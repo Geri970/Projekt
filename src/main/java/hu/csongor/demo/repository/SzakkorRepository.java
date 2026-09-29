@@ -9,4 +9,5 @@ public interface SzakkorRepository
 
     boolean existsByName(String name);
     List<Szakkor> findBySchoolId(Integer schoolId);
+
 }

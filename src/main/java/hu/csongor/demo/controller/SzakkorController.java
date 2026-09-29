@@ -1,6 +1,8 @@
 package hu.csongor.demo.controller;
 
+import hu.csongor.demo.entity.School;
 import hu.csongor.demo.entity.Szakkor;
+import hu.csongor.demo.repository.SchoolRepository;
 import hu.csongor.demo.repository.SzakkorRepository;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,11 +14,14 @@ import java.util.List;
 public class SzakkorController {
 
     private final SzakkorRepository szakkorRepository;
+    private final SchoolRepository schoolRepository;
 
     public SzakkorController(
-            SzakkorRepository szakkorRepository) {
+            SzakkorRepository szakkorRepository,
+            SchoolRepository schoolRepository) {
 
         this.szakkorRepository = szakkorRepository;
+        this.schoolRepository = schoolRepository;
     }
 
     @GetMapping
@@ -62,6 +67,17 @@ public class SzakkorController {
                 LocalDateTime.now().withNano(0)
         );
         szakkor.setDeleted(false);
+        School school = schoolRepository
+                .findById(szakkor.getSchoolId())
+                .orElse(null);
+
+        if(school == null){
+            return "Nincs ilyen iskola!";
+        }
+
+        if(!school.getStatusz().equals("APPROVED")){
+            return "Az iskola nincs jóváhagyva!";
+        }
         return szakkorRepository.save(szakkor);
     }
     @GetMapping("/school/{id}")
