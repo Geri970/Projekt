@@ -1,137 +1,58 @@
 package hu.csongor.demo.controller;
 
-import hu.csongor.demo.entity.User;
-import hu.csongor.demo.repository.UserRepository;
-import org.springframework.web.bind.annotation.*;
 import hu.csongor.demo.dto.response.UserResponse;
+import hu.csongor.demo.service.UserService;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(
+            UserService userService) {
+
+        this.userService = userService;
     }
 
     @GetMapping
-    public List<UserResponse> getUsers() {
-
-        List<User> users =
-                userRepository.findByIsDeleted(false);
-
-        return users.stream()
-                .map(user -> new UserResponse(
-                        user.getId(),
-                        user.getName(),
-                        user.getEmail()
-                ))
-                .toList();
+    public java.util.List<UserResponse> getUsers() {
+        return userService.getUsers();
     }
 
     @GetMapping("/stats")
     public Map<String, Object> getStats() {
-
-        Map<String, Object> stats = new HashMap<>();
-
-        stats.put(
-                "osszes",
-                userRepository.count()
-        );
-
-        stats.put(
-                "diakok",
-                userRepository.countByRole("DIAK")
-        );
-
-        stats.put(
-                "tanarok",
-                userRepository.countByRole("TANAR")
-        );
-
-        stats.put(
-                "tiltott",
-                userRepository.countByIsBanned(true)
-        );
-
-        return stats;
+        return userService.getStats();
     }
 
     @PutMapping("/{id}/tiltas")
     public String tiltas(
             @PathVariable Integer id) {
 
-        User user = userRepository.findById(id)
-                .orElse(null);
-
-        if (user == null) {
-            return "Felhasználó nem található";
-        }
-
-        user.setIsBanned(true);
-
-        userRepository.save(user);
-
-        return "Felhasználó tiltva";
+        return userService.tiltas(id);
     }
 
     @PutMapping("/{id}/feloldas")
     public String feloldas(
             @PathVariable Integer id) {
 
-        User user = userRepository.findById(id)
-                .orElse(null);
-
-        if (user == null) {
-            return "Felhasználó nem található!";
-        }
-
-        user.setIsBanned(false);
-
-        userRepository.save(user);
-
-        return "Felhasználó feloldva!";
+        return userService.feloldas(id);
     }
 
     @PutMapping("/{id}/tanar")
     public String tanar(
             @PathVariable Integer id) {
 
-        User user = userRepository.findById(id)
-                .orElse(null);
-
-        if (user == null) {
-            return "Felhasználó nem található";
-        }
-
-        user.setRole("TANAR");
-
-        userRepository.save(user);
-
-        return "Felhasználó már tanár";
+        return userService.tanarraTesz(id);
     }
 
     @DeleteMapping("/{id}/delete")
     public String torles(
             @PathVariable Integer id) {
 
-        User user = userRepository.findById(id)
-                .orElse(null);
-
-        if (user == null) {
-            return "Felhasználó nem található";
-        }
-
-        user.setIsDeleted(true);
-        user.setDeletedAt(LocalDateTime.now().withNano(0));
-        userRepository.save(user);
-
-        return "Fiók törölve";
+        return userService.torles(id);
     }
 }
