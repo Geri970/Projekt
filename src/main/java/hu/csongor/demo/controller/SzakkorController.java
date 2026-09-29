@@ -64,6 +64,10 @@ public class SzakkorController {
         szakkor.setDeleted(false);
         return szakkorRepository.save(szakkor);
     }
+    @GetMapping("/school/{id}")
+    public List<Szakkor> getSchoolSzakkorok(@PathVariable Integer id) {
+        return szakkorRepository.findBySchoolId(id);
+    }
     @DeleteMapping("/{id}/del")
     public String torles(@PathVariable Integer id){
         Szakkor szakkor = szakkorRepository.findById(id).orElse(null);
