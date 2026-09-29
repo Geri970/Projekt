@@ -4,6 +4,7 @@ import hu.csongor.demo.entity.User;
 import hu.csongor.demo.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class UserController {
 
     @GetMapping
     public List<User> getUsers() {
-        return userRepository.findAll();
+        return userRepository.findByIsDeleted(false);
     }
 
     @GetMapping("/stats")
@@ -105,7 +106,7 @@ public class UserController {
         return "Felhasználó már tanár";
     }
 
-    @DeleteMapping("/{id}/torles")
+    @DeleteMapping("/{id}/delete")
     public String torles(
             @PathVariable Integer id) {
 
@@ -116,7 +117,9 @@ public class UserController {
             return "Felhasználó nem található";
         }
 
-        userRepository.delete(user);
+        user.setIsDeleted(true);
+        user.setDeletedAt(LocalDateTime.now().withNano(0));
+        userRepository.save(user);
 
         return "Fiók törölve";
     }

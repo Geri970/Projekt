@@ -74,7 +74,14 @@ public class SzakkorController {
         if(szakkor == null){
             return "Nincs ilyen szakkör";
         }
-        szakkorRepository.delete(szakkor);
+        szakkor.setDeleted(true);
+
+        szakkor.setDeletedAt(
+                LocalDateTime.now().withNano(0)
+        );
+
+        szakkorRepository.save(szakkor);
+
         return "Szakkör törölve";
     }
     @PutMapping("/{id}/update")
