@@ -80,9 +80,24 @@ public class SzakkorService {
         }
 
         if(!school.getStatusz()
-                .equals("APPROVED")) {
+                .equals("approved")) {
 
             return "Az iskola nincs jóváhagyva!";
+        }
+        User teacher = userRepository
+                .findById(
+                        szakkor.getTeacherId()
+                )
+                .orElse(null);
+
+        if (teacher == null) {
+            return "Nincs ilyen tanár!";
+        }
+
+        if (!teacher.getRole()
+                .equals("TANAR")) {
+
+            return "Csak tanár hozhat létre szakkört!";
         }
 
         szakkor.setCreatedAt(

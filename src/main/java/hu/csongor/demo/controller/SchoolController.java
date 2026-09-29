@@ -23,7 +23,7 @@ public class SchoolController {
         if(school.getName() == null ||
                 school.getName().isBlank()){
 
-            return "Az iskola Namee kötelező!";
+            return "Az iskola név kötelező!";
         }
         if(school.getVaros() == null ||
                 school.getVaros().isBlank()){

@@ -38,6 +38,8 @@ public class Szakkor {
 
     @Column(name = "school_id")
     private Integer schoolId;
+    @Column(name = "teacher_id")
+    private Integer teacherId;
 
     public Integer getId() {
         return id;
@@ -122,4 +124,11 @@ public class Szakkor {
     public void setSchoolId(Integer schoolId) {
         this.schoolId = schoolId;
     }
+    public Integer getTeacherId() {
+        return teacherId;
+    }
+    public void setTeacherId(Integer teacherId) {
+        this.teacherId = teacherId;
+    }
+
 }
