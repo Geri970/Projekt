@@ -1,29 +1,28 @@
 package hu.csongor.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user")
-public class User {
+@Table(name = "hirdetmenyek")
+public class Hirdetmeny {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name")
-    private String name;
+    private String title;
 
-    private String email;
+    private String content;
 
-    @Column(name = "password")
-    private String password;
+    @Column(name = "teacher_id")
+    private Integer teacherId;
 
-    private String role;
+    @Column(name = "school_id")
+    private Integer schoolId;
 
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
@@ -35,43 +34,46 @@ public class User {
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
-    @Column(name = "is_banned")
-    private Boolean isBanned;
-
+    public Hirdetmeny() {
+    }
     public Integer getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getTitle() {
+        return title;
     }
 
-    public String getEmail() {
-        return email;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getContent() {
+        return content;
     }
 
-    public String getPassword() {
-        return password;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public Integer getTeacherId() {
+        return teacherId;
     }
 
-    public String getRole() {
-        return role;
+    public void setTeacherId(Integer teacherId) {
+        this.teacherId = teacherId;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public Integer getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Integer schoolId) {
+        this.schoolId = schoolId;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -105,12 +107,5 @@ public class User {
     public void setIsDeleted(Boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
-
-    public Boolean getIsBanned() {
-        return isBanned;
-    }
-
-    public void setIsBanned(Boolean isBanned) {
-        this.isBanned = isBanned;
-    }
+    // getters/setters
 }

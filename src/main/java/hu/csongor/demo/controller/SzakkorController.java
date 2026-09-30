@@ -43,6 +43,13 @@ public class SzakkorController {
                 szakkor
         );
     }
+    @GetMapping("/teacher/{id}")
+    public List<Szakkor> getTeacherSzakkorok(
+            @PathVariable Integer id) {
+
+        return szakkorService
+                .getTeacherSzakkorok(id);
+    }
     @GetMapping("/school/{id}")
     public List<Szakkor> getSchoolSzakkorok(
             @PathVariable Integer id) {

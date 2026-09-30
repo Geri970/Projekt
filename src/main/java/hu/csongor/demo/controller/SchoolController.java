@@ -1,7 +1,8 @@
 package hu.csongor.demo.controller;
 
 import hu.csongor.demo.entity.School;
-import hu.csongor.demo.repository.SchoolRepository;
+import hu.csongor.demo.service.SchoolService;
+import hu.csongor.demo.dto.response.SchoolResponse;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -9,84 +10,59 @@ import java.util.List;
 @RequestMapping("/api/school")
 public class SchoolController {
 
-    private final SchoolRepository schoolRepository;
+    private final SchoolService schoolService;
 
     public SchoolController(
-            SchoolRepository schoolRepository) {
+            SchoolService schoolService) {
 
-        this.schoolRepository = schoolRepository;
+        this.schoolService = schoolService;
     }
+
     @PostMapping
     public Object createSchool(
             @RequestBody School school){
 
-        if(school.getName() == null ||
-                school.getName().isBlank()){
-
-            return "Az iskola név kötelező!";
-        }
-        if(school.getVaros() == null ||
-                school.getVaros().isBlank()){
-
-            return "Város megadása kötelező!";
-        }
-        if(school.getLeiras() == null ||
-                school.getLeiras().isBlank()){
-
-            return "Az iskola leírása kötelező!";
-        }
-        if(schoolRepository
-                .existsByName(
-                        school.getName())){
-
-            return "Már létezik ilyen iskola!";
-        }
-
-        school.setStatusz("PENDING");
-
-        return schoolRepository.save(
+        return schoolService.createSchool(
                 school
         );
     }
 
     @GetMapping
-    public List<School> getAllSchools(){
-
-        return schoolRepository.findAll();
-
+    public List<SchoolResponse> getAllSchools(){
+        return schoolService.getAllSchools();
     }
     @GetMapping("/PENDING")
-    public List<School> getAllSchoolsPending(){
-        return schoolRepository.findByStatusz("PENDING");
+    public List<SchoolResponse> getAllSchoolsPending(){
+        return schoolService.getAllSchoolsPending();
     }
     @GetMapping("/APPROVED")
-    public List<School> getAllSchoolsApproved(){
-        return schoolRepository.findByStatusz("APPROVED");
+    public List<SchoolResponse> getAllSchoolsApproved(){
+        return schoolService.getAllSchoolsApproved();
     }
     @GetMapping("/REJECTED")
-    public List<School> getAllSchoolsRejected(){
-        return schoolRepository.findByStatusz("REJECTED");
+    public List<SchoolResponse> getAllSchoolsRejected(){
+        return schoolService.getAllSchoolsRejected();
     }
     @PutMapping("/{id}/approve")
     public String approveSchool(
-                @PathVariable Integer id){
-        School school = schoolRepository.findById(id).orElse(null);
-        if(school == null){
-            return "Nincs ilyen iskola";
-        }
-        school.setStatusz("APPROVED");
-        schoolRepository.save(school);
-        return "Az iskola jóváhagyva";
+            @PathVariable Integer id){
+
+        return schoolService.approveSchool(
+                id
+        );
     }
     @PutMapping("/{id}/reject")
     public String rejectSchool(
             @PathVariable Integer id){
-        School school = schoolRepository.findById(id).orElse(null);
-        if(school == null){
-            return "Nincs ilyen iskola";
-        }
-        school.setStatusz("REJECTED");
-        schoolRepository.save(school);
-        return "Az iskola el lett utasítva";
+
+        return schoolService.rejectSchool(
+                id
+        );
+    }
+    @DeleteMapping("/{id}")
+    public String torles(
+            @PathVariable Integer id){
+
+        return schoolService.torles(id);
     }
 }

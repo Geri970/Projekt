@@ -71,6 +71,7 @@ public class SzakkorService {
             return "A maximális létszám nem lehet 0!";
         }
 
+
         School school = schoolRepository
                 .findById(szakkor.getSchoolId())
                 .orElse(null);
@@ -156,6 +157,14 @@ public class SzakkorService {
         szakkorRepository.save(szakkor);
 
         return "Szakkör törölve";
+    }
+    public List<Szakkor> getTeacherSzakkorok(
+            Integer teacherId) {
+
+        return szakkorRepository
+                .findByTeacherIdAndDeletedFalse(
+                        teacherId
+                );
     }
     public String updateSzakkor(
             Integer id,

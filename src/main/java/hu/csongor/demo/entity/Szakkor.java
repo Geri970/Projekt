@@ -24,7 +24,7 @@ public class Szakkor {
     @Column(name = "max_letszam")
     private Integer maxLetszam;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")

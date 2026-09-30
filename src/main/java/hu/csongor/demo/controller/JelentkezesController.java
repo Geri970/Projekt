@@ -6,6 +6,7 @@ import hu.csongor.demo.entity.User;
 import hu.csongor.demo.repository.JelentkezesRepository;
 import hu.csongor.demo.repository.SzakkorRepository;
 import hu.csongor.demo.repository.UserRepository;
+import hu.csongor.demo.service.JelentkezesService;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -17,141 +18,39 @@ import java.util.Map;
 @RequestMapping("/api/jelentkezes")
 public class JelentkezesController {
 
-    private final JelentkezesRepository jelentkezesRepository;
-    private final UserRepository userRepository;
-    private final SzakkorRepository szakkorRepository;
+    private final JelentkezesService jelentkezesService;
 
-    public JelentkezesController(
-            JelentkezesRepository jelentkezesRepository,
-            UserRepository userRepository,
-            SzakkorRepository szakkorRepository) {
-
-        this.jelentkezesRepository = jelentkezesRepository;
-        this.userRepository = userRepository;
-        this.szakkorRepository = szakkorRepository;
+    public JelentkezesController(JelentkezesService jelentkezesService) {
+        this.jelentkezesService = jelentkezesService;
     }
 
     @PostMapping
-    public Object jelentkezes(
-            @RequestBody Jelentkezes jelentkezes) {
-
-        if (!userRepository.existsById(
-                jelentkezes.getUserId())) {
-
-            return "Nincs ilyen felhasználó!";
-        }
-        User user =
-                userRepository.findById(
-                                jelentkezes.getUserId())
-                        .orElse(null);
-
-        if(Boolean.TRUE.equals(
-                user.getIsDeleted())) {
-
-            return "A felhasználó törölve van!";
-        }
-
-        if(Boolean.TRUE.equals(
-                user.getIsBanned())) {
-
-            return "A felhasználó tiltva van!";
-        }
-
-        if (!szakkorRepository.existsById(
-                jelentkezes.getSzakkorId())) {
-
-            return "Nincs ilyen szakkör!";
-        }
-        if (jelentkezesRepository
-                .existsByUserIdAndSzakkorId(
-                        jelentkezes.getUserId(),
-                        jelentkezes.getSzakkorId())) {
-
-            return "Már jelentkeztél erre a szakkörre!";
-        }
-
-        Szakkor szakkor =
-                szakkorRepository.findById(
-                                jelentkezes.getSzakkorId())
-                        .orElse(null);
-        if(Boolean.TRUE.equals(szakkor.getDeleted())){
-            return "A szakkör törölve van!";
-        }
-        if (szakkor == null) {
-            return "Nincs ilyen szakkör!";
-        }
-
-        long letszam =
-                jelentkezesRepository.countBySzakkorId(
-                        jelentkezes.getSzakkorId());
-
-        if (letszam >= szakkor.getMaxLetszam()) {
-            return "A szakkör betelt!";
-        }
-
-        jelentkezes.setJelentkezesDatum(
-                LocalDateTime.now().withNano(0)
-        );
-
-        return jelentkezesRepository.save(
-                jelentkezes
-        );
+    public Object jelentkezes(@RequestBody Jelentkezes jelentkezes) {
+        return jelentkezesService.jelentkezes(jelentkezes);
     }
 
     @GetMapping
     public List<Jelentkezes> getAllJelentkezes() {
-
-        return jelentkezesRepository.findAll();
+        return jelentkezesService.getAllJelentkezes();
     }
 
     @GetMapping("/szakkor/{id}/db")
-    public Map<String, Long> getJelentkezokSzama(
-            @PathVariable Integer id){
-
-        Map<String, Long> map = new HashMap<>();
-
-        map.put(
-                "jelentkezok",
-                jelentkezesRepository.countBySzakkorId(id)
-        );
-
-        return map;
+    public Map<String, Long> getJelentkezokSzama(@PathVariable Integer id) {
+        return jelentkezesService.getJelentkezokSzama(id);
     }
 
     @GetMapping("/user/{id}")
-    public List<Jelentkezes> getUserJelentkezesek(
-            @PathVariable Integer id) {
-
-        return jelentkezesRepository
-                .findByUserId(id);
+    public List<Jelentkezes> getUserJelentkezesek(@PathVariable Integer id) {
+        return jelentkezesService.getUserJelentkezesek(id);
     }
 
     @GetMapping("/szakkor/{id}")
-    public List<Jelentkezes> getSzakkorJelentkezoi(
-            @PathVariable Integer id) {
-
-        return jelentkezesRepository
-                .findBySzakkorId(id);
+    public List<Jelentkezes> getSzakkorJelentkezoi(@PathVariable Integer id) {
+        return jelentkezesService.getSzakkorJelentkezoi(id);
     }
 
-
     @DeleteMapping("/{id}")
-    public String torles(
-            @PathVariable Integer id) {
-
-        Jelentkezes jelentkezes =
-                jelentkezesRepository
-                        .findById(id)
-                        .orElse(null);
-
-        if (jelentkezes == null) {
-            return "Nincs ilyen jelentkezés!";
-        }
-
-        jelentkezesRepository.delete(
-                jelentkezes
-        );
-
-        return "Jelentkezés törölve!";
+    public String torles(@PathVariable Integer id) {
+        return jelentkezesService.torles(id);
     }
 }

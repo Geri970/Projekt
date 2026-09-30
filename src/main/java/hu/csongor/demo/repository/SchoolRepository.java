@@ -10,5 +10,7 @@ public interface SchoolRepository
 
     boolean existsByName(String name);
 
-    List<School> findByStatusz(String statusz);
+    List<School> findByStatuszAndIsDeletedFalse(
+            String statusz);
+    List<School> findByIsDeletedFalse();
 }
