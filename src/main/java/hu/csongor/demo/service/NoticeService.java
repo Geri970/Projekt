@@ -1,13 +1,13 @@
 package hu.csongor.demo.service;
 
-import hu.csongor.demo.entity.Hirdetmeny;
+import hu.csongor.demo.entity.Notice;
 import hu.csongor.demo.entity.School;
 import hu.csongor.demo.entity.User;
 
-import hu.csongor.demo.repository.HirdetmenyRepository;
+import hu.csongor.demo.repository.NoticeRepository;
 import hu.csongor.demo.repository.SchoolRepository;
 import hu.csongor.demo.repository.UserRepository;
-import hu.csongor.demo.dto.response.HirdetmenyResponse;
+import hu.csongor.demo.dto.response.NoticeResponse;
 
 import java.util.List;
 
@@ -17,38 +17,38 @@ import java.time.LocalDateTime;
 
 @Service
 public class HirdetmenyService {
-    private final HirdetmenyRepository hirdetmenyRepository;
+    private final NoticeRepository noticeRepository;
     private final UserRepository userRepository;
     private final SchoolRepository schoolRepository;
 
     public HirdetmenyService(
-            HirdetmenyRepository hirdetmenyRepository,
+            NoticeRepository noticeRepository,
             UserRepository userRepository,
             SchoolRepository schoolRepository) {
 
-        this.hirdetmenyRepository = hirdetmenyRepository;
+        this.noticeRepository = noticeRepository;
         this.userRepository = userRepository;
         this.schoolRepository = schoolRepository;
     }
     public Object createHirdetmeny(
-            Hirdetmeny hirdetmeny) {
+            Notice notice) {
 
 
-        if(hirdetmeny.getTitle() == null ||
-                hirdetmeny.getTitle().isBlank()) {
+        if(notice.getTitle() == null ||
+                notice.getTitle().isBlank()) {
 
             return "A cím megadása kötelező!";
         }
 
-        if(hirdetmeny.getContent() == null ||
-                hirdetmeny.getContent().isBlank()) {
+        if(notice.getContent() == null ||
+                notice.getContent().isBlank()) {
 
             return "A tartalom megadása kötelező!";
         }
 
         User teacher = userRepository
                 .findById(
-                        hirdetmeny.getTeacherId()
+                        notice.getTeacherId()
                 )
                 .orElse(null);
 
@@ -65,7 +65,7 @@ public class HirdetmenyService {
 
         School school = schoolRepository
                 .findById(
-                        hirdetmeny.getSchoolId()
+                        notice.getSchoolId()
                 )
                 .orElse(null);
 
@@ -80,93 +80,93 @@ public class HirdetmenyService {
             return "Az iskola törölve van!";
         }
 
-        hirdetmeny.setCreatedAt(
+        notice.setCreatedAt(
                 LocalDateTime.now().withNano(0)
         );
 
-        hirdetmeny.setUpdatedAt(
+        notice.setUpdatedAt(
                 LocalDateTime.now().withNano(0)
         );
 
-        hirdetmeny.setIsDeleted(false);
+        notice.setIsDeleted(false);
 
-        return hirdetmenyRepository.save(
-                hirdetmeny
+        return noticeRepository.save(
+                notice
         );
     }
-    public List<HirdetmenyResponse>
+    public List<NoticeResponse>
     getAllHirdetmenyek() {
 
-        List<Hirdetmeny> hirdetmenyek =
-                hirdetmenyRepository
+        List<Notice> hirdetmenyek =
+                noticeRepository
                         .findByIsDeletedFalse();
 
         return hirdetmenyek.stream()
-                .map(hirdetmeny ->
-                        new HirdetmenyResponse(
-                                hirdetmeny.getId(),
-                                hirdetmeny.getTitle(),
-                                hirdetmeny.getContent(),
-                                hirdetmeny.getTeacherId(),
-                                hirdetmeny.getSchoolId(),
-                                hirdetmeny.getCreatedAt()
+                .map(notice ->
+                        new NoticeResponse(
+                                notice.getId(),
+                                notice.getTitle(),
+                                notice.getContent(),
+                                notice.getTeacherId(),
+                                notice.getSchoolId(),
+                                notice.getCreatedAt()
                         ))
                 .toList();
     }
-    public List<HirdetmenyResponse>
+    public List<NoticeResponse>
     getSchoolHirdetmenyek(
             Integer schoolId) {
 
-        return hirdetmenyRepository
+        return noticeRepository
                 .findBySchoolIdAndIsDeletedFalse(
                         schoolId
                 )
                 .stream()
-                .map(hirdetmeny ->
-                        new HirdetmenyResponse(
-                                hirdetmeny.getId(),
-                                hirdetmeny.getTitle(),
-                                hirdetmeny.getContent(),
-                                hirdetmeny.getTeacherId(),
-                                hirdetmeny.getSchoolId(),
-                                hirdetmeny.getCreatedAt()
+                .map(notice ->
+                        new NoticeResponse(
+                                notice.getId(),
+                                notice.getTitle(),
+                                notice.getContent(),
+                                notice.getTeacherId(),
+                                notice.getSchoolId(),
+                                notice.getCreatedAt()
                         ))
                 .toList();
     }
-    public List<HirdetmenyResponse>
+    public List<NoticeResponse>
     getTeacherHirdetmenyek(
             Integer teacherId) {
 
-        return hirdetmenyRepository
+        return noticeRepository
                 .findByTeacherIdAndIsDeletedFalse(
                         teacherId
                 )
                 .stream()
-                .map(hirdetmeny ->
-                        new HirdetmenyResponse(
-                                hirdetmeny.getId(),
-                                hirdetmeny.getTitle(),
-                                hirdetmeny.getContent(),
-                                hirdetmeny.getTeacherId(),
-                                hirdetmeny.getSchoolId(),
-                                hirdetmeny.getCreatedAt()
+                .map(notice ->
+                        new NoticeResponse(
+                                notice.getId(),
+                                notice.getTitle(),
+                                notice.getContent(),
+                                notice.getTeacherId(),
+                                notice.getSchoolId(),
+                                notice.getCreatedAt()
                         ))
                 .toList();
     }
     public String updateHirdetmeny(
             Integer id,
-            Hirdetmeny ujAdatok) {
+            Notice ujAdatok) {
 
-        Hirdetmeny hirdetmeny =
-                hirdetmenyRepository
+        Notice notice =
+                noticeRepository
                         .findById(id)
                         .orElse(null);
 
-        if(hirdetmeny == null) {
+        if(notice == null) {
             return "Nincs ilyen hirdetmény!";
         }
 
-        if(!hirdetmeny.getTeacherId()
+        if(!notice.getTeacherId()
                 .equals(ujAdatok.getTeacherId())) {
 
             return "Csak a létrehozó tanár módosíthatja a hirdetményt!";
@@ -184,20 +184,20 @@ public class HirdetmenyService {
             return "A tartalom megadása kötelező!";
         }
 
-        hirdetmeny.setTitle(
+        notice.setTitle(
                 ujAdatok.getTitle()
         );
 
-        hirdetmeny.setContent(
+        notice.setContent(
                 ujAdatok.getContent()
         );
 
-        hirdetmeny.setUpdatedAt(
+        notice.setUpdatedAt(
                 LocalDateTime.now().withNano(0)
         );
 
-        hirdetmenyRepository.save(
-                hirdetmeny
+        noticeRepository.save(
+                notice
         );
 
         return "Hirdetmény módosítva!";
@@ -206,27 +206,27 @@ public class HirdetmenyService {
     public String torles(
             Integer id) {
 
-        Hirdetmeny hirdetmeny =
-                hirdetmenyRepository
+        Notice notice =
+                noticeRepository
                         .findById(id)
                         .orElse(null);
 
-        if(hirdetmeny == null) {
+        if(notice == null) {
             return "Nincs ilyen hirdetmény!";
         }
 
-        hirdetmeny.setIsDeleted(true);
+        notice.setIsDeleted(true);
 
-        hirdetmeny.setDeletedAt(
+        notice.setDeletedAt(
                 LocalDateTime.now().withNano(0)
         );
 
-        hirdetmeny.setUpdatedAt(
+        notice.setUpdatedAt(
                 LocalDateTime.now().withNano(0)
         );
 
-        hirdetmenyRepository.save(
-                hirdetmeny
+        noticeRepository.save(
+                notice
         );
 
         return "Hirdetmény törölve!";

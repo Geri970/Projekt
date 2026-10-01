@@ -1,10 +1,10 @@
 package hu.csongor.demo.service;
 
-import hu.csongor.demo.entity.Jelentkezes;
-import hu.csongor.demo.entity.Szakkor;
+import hu.csongor.demo.entity.Club;
+import hu.csongor.demo.entity.Application;
 import hu.csongor.demo.entity.User;
-import hu.csongor.demo.repository.JelentkezesRepository;
-import hu.csongor.demo.repository.SzakkorRepository;
+import hu.csongor.demo.repository.ApplicationRepository;
+import hu.csongor.demo.repository.ClubRepository;
 import hu.csongor.demo.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,32 +16,32 @@ import java.util.Map;
 @Service
 public class JelentkezesService {
 
-    private final JelentkezesRepository jelentkezesRepository;
+    private final ApplicationRepository applicationRepository;
     private final UserRepository userRepository;
-    private final SzakkorRepository szakkorRepository;
+    private final ClubRepository clubRepository;
 
     public JelentkezesService(
-            JelentkezesRepository jelentkezesRepository,
+            ApplicationRepository applicationRepository,
             UserRepository userRepository,
-            SzakkorRepository szakkorRepository) {
+            ClubRepository clubRepository) {
 
-        this.jelentkezesRepository = jelentkezesRepository;
+        this.applicationRepository = applicationRepository;
         this.userRepository = userRepository;
-        this.szakkorRepository = szakkorRepository;
+        this.clubRepository = clubRepository;
     }
 
     public Object jelentkezes(
-            Jelentkezes jelentkezes) {
+            Application application) {
 
         if (!userRepository.existsById(
-                jelentkezes.getUserId())) {
+                application.getUserId())) {
 
             return "Nincs ilyen felhasználó!";
         }
 
         User user = userRepository
                 .findById(
-                        jelentkezes.getUserId())
+                        application.getUserId())
                 .orElse(null);
 
         if(Boolean.TRUE.equals(
@@ -56,54 +56,54 @@ public class JelentkezesService {
             return "A felhasználó tiltva van!";
         }
 
-        if (!szakkorRepository.existsById(
-                jelentkezes.getSzakkorId())) {
+        if (!clubRepository.existsById(
+                application.getSzakkorId())) {
 
             return "Nincs ilyen szakkör!";
         }
 
-        Szakkor szakkor = szakkorRepository
+        Club club = clubRepository
                 .findById(
-                        jelentkezes.getSzakkorId())
+                        application.getSzakkorId())
                 .orElse(null);
 
         if(Boolean.TRUE.equals(
-                szakkor.getDeleted())) {
+                club.getDeleted())) {
 
             return "A szakkör törölve van!";
         }
 
-        if (jelentkezesRepository
+        if (applicationRepository
                 .existsByUserIdAndSzakkorId(
-                        jelentkezes.getUserId(),
-                        jelentkezes.getSzakkorId())) {
+                        application.getUserId(),
+                        application.getSzakkorId())) {
 
             return "Már jelentkeztél erre a szakkörre!";
         }
 
         long letszam =
-                jelentkezesRepository
+                applicationRepository
                         .countBySzakkorId(
-                                jelentkezes.getSzakkorId());
+                                application.getSzakkorId());
 
         if (letszam >=
-                szakkor.getMaxLetszam()) {
+                club.getMaxLetszam()) {
 
             return "A szakkör betelt!";
         }
 
-        jelentkezes.setJelentkezesDatum(
+        application.setJelentkezesDatum(
                 LocalDateTime.now()
                         .withNano(0));
 
-        return jelentkezesRepository
-                .save(jelentkezes);
+        return applicationRepository
+                .save(application);
     }
 
-    public List<Jelentkezes>
+    public List<Application>
     getAllJelentkezes() {
 
-        return jelentkezesRepository
+        return applicationRepository
                 .findAll();
     }
 
@@ -113,31 +113,31 @@ public class JelentkezesService {
 
         map.put(
                 "jelentkezok",
-                jelentkezesRepository.countBySzakkorId(id)
+                applicationRepository.countBySzakkorId(id)
         );
 
         return map;
     }
 
-    public List<Jelentkezes> getUserJelentkezesek(Integer id) {
-        return jelentkezesRepository.findByUserId(id);
+    public List<Application> getUserJelentkezesek(Integer id) {
+        return applicationRepository.findByUserId(id);
     }
 
-    public List<Jelentkezes> getSzakkorJelentkezoi(Integer id) {
-        return jelentkezesRepository.findBySzakkorId(id);
+    public List<Application> getSzakkorJelentkezoi(Integer id) {
+        return applicationRepository.findBySzakkorId(id);
     }
 
     public String torles(Integer id) {
 
-        Jelentkezes jelentkezes = jelentkezesRepository
+        Application application = applicationRepository
                 .findById(id)
                 .orElse(null);
 
-        if (jelentkezes == null) {
+        if (application == null) {
             return "Nincs ilyen jelentkezés!";
         }
 
-        jelentkezesRepository.delete(jelentkezes);
+        applicationRepository.delete(application);
 
         return "Jelentkezés törölve!";
     }

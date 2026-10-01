@@ -1,11 +1,8 @@
 package hu.csongor.demo.service;
 
-import hu.csongor.demo.dto.response.JelentkezoResponse;
-import hu.csongor.demo.dto.response.SzakkorResponse;
-import hu.csongor.demo.entity.Jelentkezes;
-import hu.csongor.demo.entity.School;
-import hu.csongor.demo.entity.Szakkor;
-import hu.csongor.demo.entity.User;
+import hu.csongor.demo.dto.response.ApplicationResponse;
+import hu.csongor.demo.dto.response.ClubResponse;
+import hu.csongor.demo.entity.*;
 import hu.csongor.demo.repository.*;
 import org.springframework.stereotype.Service;
 
@@ -15,66 +12,66 @@ import java.util.List;
 @Service
 public class SzakkorService {
 
-    private final SzakkorRepository szakkorRepository;
+    private final ClubRepository clubRepository;
     private final SchoolRepository schoolRepository;
-    private final JelentkezesRepository jelentkezesRepository;
+    private final ApplicationRepository applicationRepository;
     private final RatingRepository ratingRepository;
     private final UserRepository userRepository;
 
     public SzakkorService(
-            SzakkorRepository szakkorRepository,
+            ClubRepository clubRepository,
             SchoolRepository schoolRepository,
-            JelentkezesRepository jelentkezesRepository,
+            ApplicationRepository applicationRepository,
             UserRepository userRepository,
             RatingRepository ratingRepository) {
 
-        this.szakkorRepository = szakkorRepository;
+        this.clubRepository = clubRepository;
         this.schoolRepository = schoolRepository;
-        this.jelentkezesRepository = jelentkezesRepository;
+        this.applicationRepository = applicationRepository;
         this.userRepository = userRepository;
         this.ratingRepository = ratingRepository;
     }
     public Object createSzakkor(
-            Szakkor szakkor) {
+            Club club) {
 
-        if(szakkor.getName() == null ||
-                szakkor.getName().isBlank()) {
+        if(club.getName() == null ||
+                club.getName().isBlank()) {
 
             return "A szakkör neve kötelező!";
         }
 
-        if(szakkorRepository.existsByName(
-                szakkor.getName())) {
+        if(clubRepository.existsByName(
+                club.getName())) {
 
             return "Már létezik ilyen szakkör";
         }
 
-        if(szakkor.getHelyszin() == null ||
-                szakkor.getHelyszin().isBlank()) {
+        if(club.getHelyszin() == null ||
+                club.getHelyszin().isBlank()) {
 
             return "A szakkör helyszíne kötelező!";
         }
 
-        if(szakkor.getLeiras() == null ||
-                szakkor.getLeiras().isBlank()) {
+        if(club.getLeiras() == null ||
+                club.getLeiras().isBlank()) {
 
             return "A szakkör leírása kötelező!";
         }
 
-        if(szakkor.getIdopont() == null ||
-                szakkor.getIdopont().isBlank()) {
+        if(club.getIdopont() == null ||
+                club.getIdopont().isBlank()) {
 
             return "A szakkör időpontját megadni kötelező!";
         }
 
-        if(szakkor.getMaxLetszam() <= 0) {
+        if(club.getMaxLetszam() <= 0) {
 
             return "A maximális létszám nem lehet 0!";
         }
 
 
         School school = schoolRepository
-                .findById(szakkor.getSchoolId())
+                .findById(club.getSchoolId())
                 .orElse(null);
 
         if(school == null) {
@@ -88,7 +85,7 @@ public class SzakkorService {
         }
         User teacher = userRepository
                 .findById(
-                        szakkor.getTeacherId()
+                        club.getTeacherId()
                 )
                 .orElse(null);
 
@@ -102,36 +99,36 @@ public class SzakkorService {
             return "Csak tanár hozhat létre szakkört!";
         }
 
-        szakkor.setCreatedAt(
+        club.setCreatedAt(
                 LocalDateTime.now().withNano(0)
         );
 
-        szakkor.setUpdatedAt(
+        club.setUpdatedAt(
                 LocalDateTime.now().withNano(0)
         );
 
-        szakkor.setDeleted(false);
+        club.setDeleted(false);
 
-        return szakkorRepository.save(
-                szakkor
+        return clubRepository.save(
+                club
         );
     }
-    public List<JelentkezoResponse> getJelentkezok(
+    public List<ApplicationResponse> getJelentkezok(
             Integer id) {
 
-        List<Jelentkezes> jelentkezesek =
-                jelentkezesRepository.findBySzakkorId(id);
+        List<Application> jelentkezesek =
+                applicationRepository.findBySzakkorId(id);
 
         return jelentkezesek.stream()
-                .map(jelentkezes -> {
+                .map(application -> {
 
                     User user = userRepository
                             .findById(
-                                    jelentkezes.getUserId()
+                                    application.getUserId()
                             )
                             .orElse(null);
 
-                    return new JelentkezoResponse(
+                    return new ApplicationResponse(
                             user.getId(),
                             user.getName(),
                             user.getEmail()
@@ -141,76 +138,76 @@ public class SzakkorService {
     }
     public String torles(Integer id){
 
-        Szakkor szakkor = szakkorRepository
+        Club club = clubRepository
                 .findById(id)
                 .orElse(null);
 
-        if(szakkor == null){
+        if(club == null){
             return "Nincs ilyen szakkör";
         }
 
-        szakkor.setDeleted(true);
+        club.setDeleted(true);
 
-        szakkor.setDeletedAt(
+        club.setDeletedAt(
                 LocalDateTime.now().withNano(0)
         );
 
-        szakkorRepository.save(szakkor);
+        clubRepository.save(club);
 
         return "Szakkör törölve";
     }
-    public List<Szakkor> getTeacherSzakkorok(
+    public List<Club> getTeacherSzakkorok(
             Integer teacherId) {
 
-        return szakkorRepository
+        return clubRepository
                 .findByTeacherIdAndDeletedFalse(
                         teacherId
                 );
     }
     public String updateSzakkor(
             Integer id,
-            Szakkor ujAdatok) {
+            Club ujAdatok) {
 
-        Szakkor szakkor = szakkorRepository
+        Club club = clubRepository
                 .findById(id)
                 .orElse(null);
 
-        if(szakkor == null){
+        if(club == null){
             return "Nincs ilyen szakkör!";
         }
 
-        szakkor.setName(
+        club.setName(
                 ujAdatok.getName()
         );
 
-        szakkor.setLeiras(
+        club.setLeiras(
                 ujAdatok.getLeiras()
         );
 
-        szakkor.setIdopont(
+        club.setIdopont(
                 ujAdatok.getIdopont()
         );
 
-        szakkor.setHelyszin(
+        club.setHelyszin(
                 ujAdatok.getHelyszin()
         );
 
-        szakkor.setMaxLetszam(
+        club.setMaxLetszam(
                 ujAdatok.getMaxLetszam()
         );
 
-        szakkor.setUpdatedAt(
+        club.setUpdatedAt(
                 LocalDateTime.now().withNano(0)
         );
 
-        szakkorRepository.save(szakkor);
+        clubRepository.save(club);
 
         return "Szakkör módosítva!";
     }
-    public List<SzakkorResponse> getAllSzakkorok() {
+    public List<ClubResponse> getAllSzakkorok() {
 
-        List<Szakkor> szakkorok =
-                szakkorRepository.findByDeleted(false);
+        List<Club> szakkorok =
+                clubRepository.findByDeleted(false);
 
         return szakkorok.stream()
                 .map(szakkor -> {
@@ -228,14 +225,14 @@ public class SzakkorService {
                     atlagErtekeles =
                             Math.round(atlagErtekeles * 10.0) / 10.0;
 
-                    return new SzakkorResponse(
+                    return new ClubResponse(
                             szakkor.getId(),
                             szakkor.getName(),
                             szakkor.getLeiras(),
                             szakkor.getIdopont(),
                             szakkor.getHelyszin(),
                             szakkor.getMaxLetszam(),
-                            jelentkezesRepository.countBySzakkorId(
+                            applicationRepository.countBySzakkorId(
                                     szakkor.getId()
                             ),
                             atlagErtekeles
@@ -243,10 +240,10 @@ public class SzakkorService {
                 })
                 .toList();
     }
-    public List<Szakkor> getSchoolSzakkorok(
+    public List<Club> getSchoolSzakkorok(
             Integer id) {
 
-        return szakkorRepository.findBySchoolId(id);
+        return clubRepository.findBySchoolId(id);
     }
 
 }

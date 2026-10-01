@@ -1,16 +1,9 @@
 package hu.csongor.demo.controller;
 
 import hu.csongor.demo.entity.Jelentkezes;
-import hu.csongor.demo.entity.Szakkor;
-import hu.csongor.demo.entity.User;
-import hu.csongor.demo.repository.JelentkezesRepository;
-import hu.csongor.demo.repository.SzakkorRepository;
-import hu.csongor.demo.repository.UserRepository;
 import hu.csongor.demo.service.JelentkezesService;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
