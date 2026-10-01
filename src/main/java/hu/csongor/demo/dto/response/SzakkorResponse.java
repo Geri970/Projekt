@@ -9,6 +9,7 @@ public class SzakkorResponse {
     private String helyszin;
     private Integer maxLetszam;
     private Long jelentkezokSzama;
+    private Double atlagErtekeles;
 
     public SzakkorResponse(
             Integer id,
@@ -17,7 +18,8 @@ public class SzakkorResponse {
             String idopont,
             String helyszin,
             Integer maxLetszam,
-            Long jelentkezokSzama) {
+            Long jelentkezokSzama,
+            Double atlagErtekeles) {
 
         this.id = id;
         this.name = name;
@@ -26,6 +28,7 @@ public class SzakkorResponse {
         this.helyszin = helyszin;
         this.maxLetszam = maxLetszam;
         this.jelentkezokSzama = jelentkezokSzama;
+        this.atlagErtekeles = atlagErtekeles;
     }
 
     public Integer getId() {
@@ -55,4 +58,8 @@ public class SzakkorResponse {
     public Long getJelentkezokSzama() {
         return jelentkezokSzama;
     }
+    public Double getAtlagErtekeles() {
+        return atlagErtekeles;
+    }
+
 }

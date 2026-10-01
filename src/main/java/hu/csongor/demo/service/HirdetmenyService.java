@@ -153,6 +153,56 @@ public class HirdetmenyService {
                         ))
                 .toList();
     }
+    public String updateHirdetmeny(
+            Integer id,
+            Hirdetmeny ujAdatok) {
+
+        Hirdetmeny hirdetmeny =
+                hirdetmenyRepository
+                        .findById(id)
+                        .orElse(null);
+
+        if(hirdetmeny == null) {
+            return "Nincs ilyen hirdetmény!";
+        }
+
+        if(!hirdetmeny.getTeacherId()
+                .equals(ujAdatok.getTeacherId())) {
+
+            return "Csak a létrehozó tanár módosíthatja a hirdetményt!";
+        }
+
+        if(ujAdatok.getTitle() == null ||
+                ujAdatok.getTitle().isBlank()) {
+
+            return "A cím megadása kötelező!";
+        }
+
+        if(ujAdatok.getContent() == null ||
+                ujAdatok.getContent().isBlank()) {
+
+            return "A tartalom megadása kötelező!";
+        }
+
+        hirdetmeny.setTitle(
+                ujAdatok.getTitle()
+        );
+
+        hirdetmeny.setContent(
+                ujAdatok.getContent()
+        );
+
+        hirdetmeny.setUpdatedAt(
+                LocalDateTime.now().withNano(0)
+        );
+
+        hirdetmenyRepository.save(
+                hirdetmeny
+        );
+
+        return "Hirdetmény módosítva!";
+    }
+
     public String torles(
             Integer id) {
 

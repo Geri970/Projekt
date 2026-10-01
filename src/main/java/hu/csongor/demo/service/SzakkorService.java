@@ -6,11 +6,9 @@ import hu.csongor.demo.entity.Jelentkezes;
 import hu.csongor.demo.entity.School;
 import hu.csongor.demo.entity.Szakkor;
 import hu.csongor.demo.entity.User;
-import hu.csongor.demo.repository.JelentkezesRepository;
-import hu.csongor.demo.repository.SchoolRepository;
-import hu.csongor.demo.repository.SzakkorRepository;
-import hu.csongor.demo.repository.UserRepository;
+import hu.csongor.demo.repository.*;
 import org.springframework.stereotype.Service;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,18 +18,21 @@ public class SzakkorService {
     private final SzakkorRepository szakkorRepository;
     private final SchoolRepository schoolRepository;
     private final JelentkezesRepository jelentkezesRepository;
+    private final RatingRepository ratingRepository;
     private final UserRepository userRepository;
 
     public SzakkorService(
             SzakkorRepository szakkorRepository,
             SchoolRepository schoolRepository,
             JelentkezesRepository jelentkezesRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            RatingRepository ratingRepository) {
 
         this.szakkorRepository = szakkorRepository;
         this.schoolRepository = schoolRepository;
         this.jelentkezesRepository = jelentkezesRepository;
         this.userRepository = userRepository;
+        this.ratingRepository = ratingRepository;
     }
     public Object createSzakkor(
             Szakkor szakkor) {
@@ -212,17 +213,34 @@ public class SzakkorService {
                 szakkorRepository.findByDeleted(false);
 
         return szakkorok.stream()
-                .map(szakkor -> new SzakkorResponse(
-                        szakkor.getId(),
-                        szakkor.getName(),
-                        szakkor.getLeiras(),
-                        szakkor.getIdopont(),
-                        szakkor.getHelyszin(),
-                        szakkor.getMaxLetszam(),
-                        jelentkezesRepository.countBySzakkorId(
-                                szakkor.getId()
-                        )
-                ))
+                .map(szakkor -> {
+
+                    double atlagErtekeles =
+                            ratingRepository
+                                    .findBySzakkorIdAndIsDeletedFalse(
+                                            szakkor.getId()
+                                    )
+                                    .stream()
+                                    .mapToInt(rating -> rating.getStar())
+                                    .average()
+                                    .orElse(0.0);
+
+                    atlagErtekeles =
+                            Math.round(atlagErtekeles * 10.0) / 10.0;
+
+                    return new SzakkorResponse(
+                            szakkor.getId(),
+                            szakkor.getName(),
+                            szakkor.getLeiras(),
+                            szakkor.getIdopont(),
+                            szakkor.getHelyszin(),
+                            szakkor.getMaxLetszam(),
+                            jelentkezesRepository.countBySzakkorId(
+                                    szakkor.getId()
+                            ),
+                            atlagErtekeles
+                    );
+                })
                 .toList();
     }
     public List<Szakkor> getSchoolSzakkorok(

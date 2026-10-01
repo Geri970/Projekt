@@ -60,4 +60,15 @@ public class HirdetmenyController {
         return hirdetmenyService
                 .torles(id);
     }
+    @PutMapping("/{id}")
+    public String updateHirdetmeny(
+            @PathVariable Integer id,
+            @RequestBody Hirdetmeny ujAdatok){
+
+        return hirdetmenyService
+                .updateHirdetmeny(
+                        id,
+                        ujAdatok
+                );
+    }
 }

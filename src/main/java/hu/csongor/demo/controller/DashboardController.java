@@ -1,6 +1,8 @@
 package hu.csongor.demo.controller;
 
+import hu.csongor.demo.dto.response.DashboardResponse;
 import hu.csongor.demo.repository.*;
+import hu.csongor.demo.service.DashboardService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -10,33 +12,17 @@ import java.util.Map;
 @RequestMapping("/api/dashboard")
 public class DashboardController {
 
-    private final UserRepository userRepository;
-    private final SchoolRepository schoolRepository;
-    private final SzakkorRepository szakkorRepository;
-    private final JelentkezesRepository jelentkezesRepository;
+    private final DashboardService dashboardService;
 
     public DashboardController(
-            UserRepository userRepository,
-            SchoolRepository schoolRepository,
-            SzakkorRepository szakkorRepository,
-            JelentkezesRepository jelentkezesRepository) {
+            DashboardService dashboardService) {
 
-        this.userRepository = userRepository;
-        this.schoolRepository = schoolRepository;
-        this.szakkorRepository = szakkorRepository;
-        this.jelentkezesRepository = jelentkezesRepository;
+        this.dashboardService = dashboardService;
     }
 
     @GetMapping
-    public Map<String, Object> stats() {
+    public DashboardResponse getDashboard(){
 
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("users", userRepository.count());
-        map.put("schools", schoolRepository.count());
-        map.put("szakkorok", szakkorRepository.count());
-        map.put("jelentkezesek", jelentkezesRepository.count());
-
-        return map;
+        return dashboardService.getDashboard();
     }
 }
